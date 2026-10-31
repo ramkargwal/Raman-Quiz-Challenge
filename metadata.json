@@ -1,0 +1,8 @@
+{
+  "name": "Raman Quiz Challenge",
+  "description": "Interactive Hindi-English Quiz Challenge with real-time complex LaTeX mathematical equation rendering, smart randomization, timer, and offline export.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

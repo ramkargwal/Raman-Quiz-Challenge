@@ -1,0 +1,1185 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Raman Quiz Challenge</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+      :root {
+        --card: #ffffff;
+        --accent: #2563eb;
+        --correct: #16a34a;
+        --wrong: #dc2626;
+        --text: #1e293b;
+        --muted: #64748b;
+        --bg: #f8fafc;
+        --border: #e2e8f0;
+        --option-bg: #ffffff;
+        --option-hover: #fffbeb;
+        --header-from: #2563eb;
+        --header-to: #4f46e5;
+        --progress-bg: #e5e7eb;
+        --timer-normal: #0ca806;
+        --timer-warn: #f59e0b;
+        --timer-danger: #dc2626;
+      }
+
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --card: #1e293b;
+          --text: #f1f5f9;
+          --muted: #94a3b8;
+          --bg: #0f172a;
+          --border: #334155;
+          --option-bg: #1e293b;
+          --option-hover: #2d3748;
+          --progress-bg: #334155;
+        }
+      }
+
+      * {
+        font-family: "Poppins", sans-serif;
+        box-sizing: border-box;
+      }
+
+      body {
+        background: linear-gradient(135deg, #d1fae5 0%, #cffafe 40%, #dbeafe 100%);
+        min-height: 100vh;
+        margin: 0;
+        padding: 0;
+      }
+
+      @media (prefers-color-scheme: dark) {
+        body {
+          background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+        }
+      }
+
+      /* ── Quiz Card ── */
+      .quiz-card {
+        width: 100%;
+        max-width: 1200px;
+        background: var(--card);
+        border-radius: 24px;
+        overflow: hidden;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.13);
+        margin: auto;
+      }
+
+      /* ── Header ── */
+      .header {
+        padding: 20px 24px;
+        background: linear-gradient(135deg, var(--header-from), var(--header-to));
+        color: white;
+      }
+
+      .header-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+
+      .quiz-controls {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        flex-shrink: 0;
+      }
+
+      #numQuestions {
+        width: 60px;
+        padding: 5px 8px;
+        border: 2px solid rgba(255, 255, 255, 0.5);
+        border-radius: 8px;
+        font-size: 15px;
+        font-weight: 600;
+        text-align: center;
+        background: rgba(255, 255, 255, 0.2);
+        color: white;
+        outline: none;
+      }
+      #numQuestions:focus {
+        border-color: #2563eb;
+        background: rgba(255, 255, 255, 0.9);
+        color: #1e293b;
+      }
+
+      #startBtn {
+        padding: 5px 14px;
+        border: none;
+        border-radius: 8px;
+        background: white;
+        color: #2563eb;
+        font-weight: 700;
+        font-size: 15px;
+        cursor: pointer;
+        transition: 0.2s;
+      }
+      #startBtn:hover {
+        background: #f0f4ff;
+        transform: scale(1.04);
+      }
+      
+      #fullscreenBtn { 
+        padding: 5px 12px; 
+        border: none; 
+        border-radius: 8px; 
+        background: rgba(255, 255, 255, 0.2); 
+        color: white; 
+        font-size: 18px; 
+        cursor: pointer; 
+        transition: 0.2s; 
+        display: flex; 
+        align-items: center; 
+        justify-content: center; 
+      }
+      #fullscreenBtn:hover { 
+        background: rgba(255, 255, 255, 0.3); 
+        transform: scale(1.05); 
+      }
+
+      .title {
+        font-size: 24px;
+        font-weight: 700;
+        text-align: center;
+        flex: 1;
+        min-width: 160px;
+      }
+
+      .score-box {
+        background: white;
+        color: #111;
+        padding: 6px 16px;
+        border-radius: 999px;
+        font-weight: 700;
+        font-size: 14px;
+        flex-shrink: 0;
+        transition: transform 0.2s;
+      }
+
+      /* ── Progress ── */
+      .progress-area { padding: 16px 24px 0; }
+      .progress-info { display: flex; justify-content: space-between; align-items: center; font-size: 13px; margin-bottom: 8px; color: var(--muted); }
+      .progress-bar { height: 20px; background: var(--progress-bg); border-radius: 999px; overflow: hidden; }
+      .progress-fill { height: 100%; width: 0%; background: linear-gradient(90deg, #2563eb, #60a5fa); transition: width 0.4s ease; }
+
+      /* ── Timer ── */
+      .timer-row { display: flex; align-items: center; gap: 10px; padding: 10px 24px 0; }
+      .timer-bar-wrap { flex: 1; height: 8px; background: var(--progress-bg); border-radius: 999px; overflow: hidden; }
+      .timer-bar { height: 100%; width: 100%; background: var(--timer-normal); transition: width 1s linear, background 0.3s; border-radius: 999px; }
+      .timer-count { font-size: 14px; font-weight: 700; min-width: 28px; text-align: right; color: var(--timer-normal); transition: color 0.3s; }
+      .timer-count.warn { color: var(--timer-warn); }
+      .timer-count.danger { color: var(--timer-danger); }
+      .timer-bar.warn { background: var(--timer-warn); }
+      .timer-bar.danger { background: var(--timer-danger); }
+
+      /* ── Content ── */
+      .content { padding: 24px 24px 20px; }
+      .question-wrapper { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 20px; }
+      .question { font-size: 28px; font-weight: 700; line-height: 1.5; color: var(--text); flex: 1; }
+      @media (max-width: 480px) { .question { font-size: 16px; } }
+
+      .speak-btn {
+        width: 40px; height: 40px; border: none; border-radius: 50%; cursor: pointer; font-size: 20px; flex-shrink: 0;
+        background: linear-gradient(135deg, #2563eb, #4f46e5); color: white; transition: all 0.25s; box-shadow: 0 4px 10px rgba(37, 99, 235, 0.25);
+      }
+      .speak-btn:hover { transform: translateY(-2px) scale(1.06); box-shadow: 0 8px 20px rgba(37, 99, 235, 0.4); }
+
+      /* ── Options ── */
+      .options { display: flex; flex-direction: column; gap: 12px; }
+      .option {
+        padding: 14px 18px; border: 2px solid var(--border); border-radius: 16px; cursor: pointer; font-size: 18px; font-weight: 500;
+        background: var(--option-bg); color: var(--text); transition: all 0.22s ease; display: flex; align-items: center; gap: 12px;
+      }
+      .option-label {
+        width: 30px; height: 30px; border-radius: 50%; background: #eff6ff; color: #2563eb; font-size: 13px; font-weight: 700;
+        display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: 0.2s;
+      }
+
+      .option:hover:not(.correct):not(.wrong):not(.disabled) {
+        background: linear-gradient(135deg, #fef9c3, #fde68a); border-color: #fbbf24; transform: translateY(-2px); box-shadow: 0 6px 18px rgba(251,191,36,0.20);
+      }
+      .option.correct {
+        background: linear-gradient(135deg, #d1fae5, #a7f3d0); color: #065f46; border-color: #10b981;
+        box-shadow: 0 0 0 3px rgba(16,185,129,0.25), 0 8px 20px rgba(16,185,129,0.20);
+      }
+      .option.correct .option-label { background: white; color: #16a34a; font-weight: 800; }
+      
+      .option.wrong {
+        background: linear-gradient(135deg, #fee2e2, #fecaca); color: #991b1b; border-color: #ef4444;
+        box-shadow: 0 0 0 3px rgba(239,68,68,0.20), 0 8px 20px rgba(239,68,68,0.15);
+      }
+      .option.wrong .option-label { background: white; color: #dc2626; font-weight: 800; }
+      .option.disabled { opacity: 0.7; cursor: not-allowed; pointer-events: none; }
+
+      .feedback { margin-top: 14px; font-size: 16px; font-weight: 700; min-height: 28px; color: var(--text); }
+
+      /* ── Result Screen ── */
+      .result { display: none; padding: 36px 28px; text-align: center; color: var(--text); }
+      .result-score-ring {
+        width: 130px; height: 130px; border-radius: 50%; margin: 0 auto 16px; display: flex; flex-direction: column;
+        align-items: center; justify-content: center; font-size: 36px; font-weight: 700; color: white;
+      }
+      .result-score-ring .sub { font-size: 13px; font-weight: 500; opacity: 0.85; }
+
+      .stats-row { display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; margin: 16px 0; }
+      .stat-pill { background: var(--bg); border: 1px solid var(--border); border-radius: 12px; padding: 10px 18px; font-size: 13px; font-weight: 600; color: var(--muted); }
+      .stat-pill span { display: block; font-size: 22px; font-weight: 700; color: var(--text); }
+      .grade-badge { display: inline-block; padding: 6px 24px; border-radius: 999px; font-size: 20px; font-weight: 800; margin-bottom: 8px; }
+
+      .result-actions { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; margin-top: 22px; }
+      .btn-action {
+        border: none; padding: 11px 22px; font-size: 15px; border-radius: 999px; cursor: pointer;
+        background: linear-gradient(135deg, #2563eb, #4f46e5); color: white; font-weight: 600; transition: all 0.2s;
+      }
+      .btn-action:hover { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(37, 99, 235, 0.3); }
+      .btn-action.amber { background: linear-gradient(135deg, #f59e0b, #d97706); }
+      .btn-action.rose { background: linear-gradient(135deg, #f43f5e, #e11d48); }
+
+      /* ── Review ── */
+      #reviewAnswers { text-align: left; margin-top: 20px; }
+      .review-item { margin-bottom: 12px; padding: 14px; background: #fef2f2; border-left: 4px solid #dc2626; border-radius: 10px; }
+      .review-item .rq { font-weight: 600; margin-bottom: 6px; color: var(--text); font-size: 14px; }
+      .review-item .ra { color: #16a34a; font-weight: 600; font-size: 14px; }
+
+      /* ── Home Page ── */
+      #homePage textarea {
+        font-family: monospace; font-size: 14px; background: rgba(255, 255, 255, 0.9); border: 1.5px solid #cbd5e1;
+        transition: border 0.2s, box-shadow 0.2s, background-color 0.2s;
+      }
+      #homePage textarea:focus { border-color: #2563eb; box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15); background: white; }
+      
+      #quizInput.drag-over {
+        border-color: #2563eb !important; background-color: #eff6ff !important;
+        box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.2) !important; transform: scale(1.01); transition: all 0.2s ease;
+      }
+
+      /* ── Saved Quizzes ── */
+      .saved-list { margin-top: 10px; width: 100%; max-width: 800px; margin-left: auto; margin-right: auto;}
+      .saved-item {
+        background: white; border: 1px solid #dbeafe; border-radius: 10px; padding: 10px 14px;
+        margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: 0.2s;
+      }
+      .saved-item:hover { background: #eff6ff; border-color: #93c5fd; }
+      .saved-item .si-name { font-weight: 600; font-size: 14px; color: #1e293b; }
+      .saved-item .si-meta { font-size: 12px; color: #64748b; }
+      .saved-item-actions { display: flex; gap: 10px; align-items: center; }
+      .export-btn { background: none; border: none; cursor: pointer; color: #0ea5e9; font-size: 18px; padding: 0 4px; line-height: 1; transition: 0.2s; }
+      .export-btn:hover { color: #0284c7; transform: scale(1.2); }
+      .del-btn { background: none; border: none; cursor: pointer; color: #dc2626; font-size: 18px; padding: 0 4px; line-height: 1; }
+
+      /* ── Animations ── */
+      .score-box.pop { animation: popAnim 0.35s; }
+      @keyframes popAnim { 50% { transform: scale(1.18); } 100% { transform: scale(1); } }
+
+      /* ── Fullscreen CSS ── */
+      :fullscreen #mainQuizWrapper { padding: 3vh 3vw !important; height: 100vh; align-items: center; }
+      :fullscreen .quiz-card { max-width: 1600px; width: 100%; height: 100%; border-radius: 24px; box-shadow: 0 25px 70px rgba(0, 0, 0, 0.2); display: flex; flex-direction: column; margin: auto; }
+      :fullscreen #quizScreen, :fullscreen .result { flex: 1; display: flex; flex-direction: column; }
+      :fullscreen .content { flex: 1; display: flex; flex-direction: column; justify-content: center; }
+    </style>
+</head>
+
+<body>
+  <div id="homePage" class="min-h-screen p-4 sm:p-6 flex flex-col justify-center items-center">
+    <div class="w-full max-w-7xl flex flex-col py-6 gap-4" style="min-height: 90vh">
+      
+      <div class="flex flex-col text-center bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800 p-6 rounded-2xl shadow-xl relative overflow-hidden border border-blue-400">
+        <div class="absolute -top-5 -right-5 text-white opacity-10 text-8xl rotate-12 pointer-events-none">🧩</div>
+        <div class="absolute -bottom-6 -left-6 text-white opacity-10 text-7xl -rotate-12 pointer-events-none">✨</div>
+        <h1 class="text-3xl font-extrabold text-white mb-1 relative z-10 drop-shadow-lg">
+          📝 Create a Quiz
+        </h1>
+        <p class="text-blue-100 font-medium relative z-10 text-sm">
+          AI से data generate करें, यहाँ paste करें, Drag & Drop करें और quiz शुरू करें।
+        </p>
+      </div>
+
+      <textarea id="quizInput" wrap="off" rows="12" placeholder="{ q: &quot;Question&quot;, o:[&quot;A&quot;,&quot;B&quot;,&quot;C&quot;,&quot;D&quot;], a:0 }," class="w-full p-4 border rounded-xl shadow-sm resize-none outline-none text-sm leading-relaxed overflow-x-auto" style="flex-grow: 1; min-height: 200px"></textarea>
+
+      <div class="flex gap-3 items-center justify-center flex-wrap">
+        <input id="quizName" type="text" placeholder="Quiz का नाम (optional)" class="flex-1 min-w-[160px] max-w-[250px] px-4 py-3 rounded-xl border border-gray-300 text-sm font-medium outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-200 bg-white/90">
+
+        <button onclick="copyQuizPrompt()" id="copyPromptBtn" class="px-5 py-3 rounded-xl font-bold text-white text-sm transition-all shadow bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 hover:-translate-y-0.5">
+          📋 Copy Prompt (C)
+        </button>
+
+        <button onclick="saveQuizToStorage()" class="px-5 py-3 rounded-xl font-bold text-white text-sm transition-all shadow bg-gradient-to-r from-violet-500 to-purple-600 hover:from-violet-600 hover:to-purple-700 hover:-translate-y-0.5">
+          💾 Save Quiz
+        </button>
+
+        <button onclick="createQuizFromText()" class="px-8 py-3 rounded-xl font-bold text-white text-lg transition-all shadow bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 hover:-translate-y-0.5">
+          🚀 Start Quiz
+        </button>
+      </div>
+      
+      <div class="mt-2 p-3 bg-white/70 rounded-xl border border-blue-200 text-center w-full max-w-3xl mx-auto shadow-sm">
+        <div class="flex flex-wrap justify-center gap-x-5 gap-y-2 text-xs font-semibold text-gray-600">
+          <span>⌨️ शॉर्टकट्स:</span>
+          <span><b class="text-blue-600">Enter</b> : Start Quiz</span>
+          <span><b class="text-blue-600">C</b> : Copy Prompt</span>
+          <span><b class="text-blue-600">Drag & Drop</b> : Load File</span>
+        </div>
+      </div>
+
+      <div id="savedSection" style="display: none; width: 100%; display: flex; flex-direction: column; align-items: center;">
+        <p class="text-sm font-bold text-gray-600 mb-2 mt-4">💾 Saved Quizzes</p>
+        <div id="savedList" class="saved-list"></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="mainQuizWrapper" class="w-full min-h-screen flex items-center justify-center p-4" style="display: none !important">
+    <div class="quiz-card" id="mainQuiz">
+      
+      <div class="header">
+        <div class="header-row">
+          <div class="quiz-controls">
+            <input type="number" id="numQuestions" min="1" title="Number of Questions (Press Q)" max="3">
+            <button id="startBtn" onclick="startQuiz()">▶ Restart (S)</button>
+          </div>
+          <div class="title">🏆 Raman Quiz Challenge 🏆</div>
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <div class="score-box" id="scoreBox">Score: 0</div>
+            <button id="fullscreenBtn" onclick="toggleFullscreen()" title="Toggle Fullscreen (F)">⛶</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="quizScreen">
+        <div class="progress-area">
+          <div class="progress-info">
+            <span id="questionNumber"></span>
+            
+            <span class="hidden sm:inline-block" style="font-size: 11px; color: var(--muted); text-align: center; font-weight: 500;">
+              ⌨️ Space: आवाज़ | N: Next | P / Right-Click: Pause | Q: Change Qty | S: Restart | Esc: Home
+            </span>
+
+            <span id="remaining"></span>
+          </div>
+          <div class="progress-bar">
+            <div class="progress-fill" id="progressFill"></div>
+          </div>
+        </div>
+
+        <div class="timer-row">
+          <span id="pauseTimerBtn" onclick="toggleTimer()" style="font-size: 20px; cursor: pointer; user-select: none" title="Pause Timer (P / Right-Click)">⏸️</span>
+          <div class="timer-bar-wrap">
+            <div class="timer-bar" id="timerBar"></div>
+          </div>
+          <span class="timer-count" id="timerCount">30</span>
+        </div>
+
+        <div class="content">
+          <div class="question-wrapper">
+            <div class="question" id="question"></div>
+            <button id="speakBtn" class="speak-btn" title="सवाल सुनें (Space)">🔊</button>
+          </div>
+          <div class="options" id="options"></div>
+          <div class="feedback" id="feedback"></div>
+        </div>
+      </div>
+
+      <div class="result" id="result">
+        <div class="result-score-ring" id="scoreRing">
+          <div id="finalScore"></div>
+          <div class="sub" id="finalFraction"></div>
+        </div>
+
+        <div class="grade-badge" id="gradeBadge"></div>
+        <p id="gradeMsg" style="font-size: 15px; color: var(--muted); margin: 4px 0 16px"></p>
+
+        <div class="stats-row">
+          <div class="stat-pill">Accuracy<span id="statAccuracy">—</span></div>
+          <div class="stat-pill">Correct<span id="statCorrect">—</span></div>
+          <div class="stat-pill">Wrong<span id="statWrong">—</span></div>
+          <div class="stat-pill">Skipped<span id="statSkipped">—</span></div>
+        </div>
+
+        <div class="result-actions">
+          <button class="btn-action amber" id="toggleReviewBtn" style="display: none" onclick="toggleReview()">
+            👁 Wrong Answers (W)
+          </button>
+          <button class="btn-action rose" id="retryBtn" style="display: none" onclick="retryWrongAnswers()">
+            🔄 Retry Wrong (R)
+          </button>
+          <button class="btn-action" onclick="startQuiz()">
+            ▶ Try Again (T)
+          </button>
+          <button class="btn-action" onclick="goHome()" style="background: linear-gradient(135deg, #475569, #334155)">
+            🏠 Home (H)
+          </button>
+        </div>
+
+        <div id="reviewAnswers"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /* ═══════════════════════════════════════════════
+       STATE
+    ═══════════════════════════════════════════════ */
+    let quiz = [];
+    let unplayedPool = []; // Smart Randomization Pool
+    let activeQuiz = [];
+    let wrongQuestions = [];
+    let current = 0, score = 0, skipped = 0;
+    let locked = false;
+    let timerInterval = null;
+    let timeLeft = 30;
+    const TIMER_SECONDS = 30;
+    let timerPaused = false;
+
+    /* ═══════════════════════════════════════════════
+       SAFE PARSER (Robust Fallback Integrated)
+    ═══════════════════════════════════════════════ */
+    function safeParseQuiz(raw) {
+      try {
+         return JSON.parse(`[${raw.replace(/,\s*$/, "")}]`);
+      } catch(e) {}
+
+      let s = raw.trim();
+      if (s.endsWith(",")) s = s.slice(0, -1);
+      let out = "[";
+      let i = 0;
+      const len = s.length;
+
+      try {
+        while (i < len) {
+          const ch = s[i];
+          if (ch === '"') {
+            out += ch; i++;
+            while (i < len) {
+              const c = s[i]; out += c; i++;
+              if (c === "\\") { out += s[i] ?? ""; i++; continue; } 
+              if (c === '"') break;
+            }
+            continue;
+          }
+          if (ch === "'") {
+            out += '"'; i++;
+            while (i < len) {
+              const c = s[i]; i++;
+              if (c === "\\" && s[i] === "'") { out += "'"; i++; continue; }
+              if (c === "'") break;
+              if (c === '"') { out += '\\"'; continue; } 
+              out += c;
+            }
+            out += '"'; continue;
+          }
+          if (/[a-zA-Z_]/.test(ch)) {
+            let ident = ""; let j = i;
+            while (j < len && /[\w]/.test(s[j])) { ident += s[j]; j++; }
+            let k = j;
+            while (k < len && (s[k] === " " || s[k] === "\t")) k++;
+            if (s[k] === ":") { out += `"${ident}"`; i = j; continue; }
+            out += ident; i = j; continue;
+          }
+          out += ch; i++;
+        }
+        out += "]";
+        return JSON.parse(out);
+      } catch (err) {
+         console.warn("Falling back to regex recovery mode...", err);
+         try {
+            let cleanStr = s.replace(/([{,]\s*)([a-zA-Z0-9_]+)\s*:/g, '$1"$2":');
+            return JSON.parse(`[${cleanStr}]`);
+         } catch(finalErr) {
+            throw finalErr;
+         }
+      }
+    }
+
+    /* ═══════════════════════════════════════════════
+       DRAG & DROP FILE UPLOAD
+    ═══════════════════════════════════════════════ */
+    const quizInputArea = document.getElementById("quizInput");
+
+    quizInputArea.addEventListener("dragover", (e) => {
+      e.preventDefault(); 
+      quizInputArea.classList.add("drag-over");
+    });
+
+    quizInputArea.addEventListener("dragleave", (e) => {
+      e.preventDefault();
+      quizInputArea.classList.remove("drag-over");
+    });
+
+    quizInputArea.addEventListener("drop", (e) => {
+      e.preventDefault();
+      quizInputArea.classList.remove("drag-over");
+      
+      if (e.dataTransfer.files.length > 0) {
+        const file = e.dataTransfer.files[0];
+        if (file.name.endsWith(".json") || file.name.endsWith(".txt") || file.type.match("text.*")) {
+          const reader = new FileReader();
+          reader.onload = (event) => {
+            quizInputArea.value = event.target.result;
+            const fileNameWithoutExt = file.name.replace(/\.[^/.]+$/, "");
+            document.getElementById("quizName").value = fileNameWithoutExt;
+          };
+          reader.readAsText(file);
+        } else {
+          alert("Error: कृपया केवल .txt या .json फ़ाइलें ही ड्रॉप करें।");
+        }
+      }
+    });
+
+    /* ═══════════════════════════════════════════════
+       LOCAL STORAGE & LIST RENDERING
+    ═══════════════════════════════════════════════ */
+    function saveQuizToStorage() {
+      const txt = document.getElementById("quizInput").value.trim();
+      if (!txt) { alert("कृपया पहले quiz data paste करें।"); return; }
+      let name = document.getElementById("quizName").value.trim();
+      if (!name) name = "Quiz " + new Date().toLocaleDateString("hi-IN");
+      const saved = JSON.parse(localStorage.getItem("savedQuizzes") || "[]");
+      saved.unshift({ name, data: txt, date: new Date().toISOString() });
+      if (saved.length > 10) saved.pop();
+      localStorage.setItem("savedQuizzes", JSON.stringify(saved));
+      renderSavedList();
+      alert("✅ Quiz save हो गई: " + name);
+    }
+
+    function renderSavedList() {
+      const saved = JSON.parse(localStorage.getItem("savedQuizzes") || "[]");
+      const section = document.getElementById("savedSection");
+      const list = document.getElementById("savedList");
+      if (saved.length === 0) {
+        section.style.display = "none";
+        return;
+      }
+      section.style.display = "flex";
+      list.innerHTML = "";
+      saved.forEach((item, idx) => {
+        const div = document.createElement("div");
+        div.className = "saved-item";
+        div.innerHTML = `
+          <div>
+            <div class="si-name">${item.name}</div>
+            <div class="si-meta">${new Date(item.date).toLocaleString("hi-IN")}</div>
+          </div>
+          <div class="saved-item-actions">
+            <button class="export-btn" title="Download Offline" onclick="exportSavedQuiz(${idx}, event)">📥</button>
+            <button class="del-btn" title="Delete" onclick="deleteSavedQuiz(${idx}, event)">🗑</button>
+          </div>
+        `;
+        div.onclick = (e) => {
+          if (e.target.closest('button')) return;
+          document.getElementById("quizInput").value = item.data;
+          document.getElementById("quizName").value = item.name;
+        };
+        list.appendChild(div);
+      });
+    }
+
+    function deleteSavedQuiz(idx, e) {
+      e.stopPropagation();
+      const saved = JSON.parse(localStorage.getItem("savedQuizzes") || "[]");
+      saved.splice(idx, 1);
+      localStorage.setItem("savedQuizzes", JSON.stringify(saved));
+      renderSavedList();
+    }
+
+    /* ═══════════════════════════════════════════════
+       OFFLINE EXPORT
+    ═══════════════════════════════════════════════ */
+    function exportSavedQuiz(idx, e) {
+      e.stopPropagation(); 
+      const saved = JSON.parse(localStorage.getItem("savedQuizzes") || "[]");
+      const item = saved[idx];
+      if (!item) return;
+
+      let safeName = item.name.replace(/[^a-z0-9]/gi, '_').toLowerCase();
+      let clone = document.documentElement.cloneNode(true);
+
+      clone.querySelector("#quizInput").textContent = item.data;
+      clone.querySelector("#quizName").setAttribute("value", item.name);
+
+      let savedSection = clone.querySelector("#savedSection");
+      if(savedSection) savedSection.style.display = "none";
+
+      let finalHTML = "<!doctype html>\n<html lang='hi'>\n" + clone.innerHTML + "\n</html>";
+
+      const blob = new Blob([finalHTML], { type: "text/html" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = safeName + "_offline.html";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      
+      alert(`✅ Offline Quiz Exported: ${item.name}`);
+    }
+
+    /* ═══════════════════════════════════════════════
+       COPY PROMPT
+    ═══════════════════════════════════════════════ */
+    function copyQuizPrompt() {
+      const promptText = `You are an Expert Quiz Master, Educational Content Analyst, and Assessment Designer.
+Your task is to carefully analyze any text, document, transcript, lesson, article, notes, or topic provided by the user and generate a high-quality multiple-choice quiz.
+
+### CRITICAL REQUIREMENT 1: Question Quantity
+Generate EXACTLY 50 UNIQUE multiple-choice questions.
+
+### CRITICAL REQUIREMENT 2: Language Rules
+* All questions must be written primarily in Hindi.
+* All technical terms, scientific names, programming concepts, tools, software, acronyms, units, formulas must remain in English.
+
+### CRITICAL REQUIREMENT 3: Options Quality
+* Exactly 4 options per question. Only one correct.
+
+### CRITICAL REQUIREMENT 4: Output Format
+Return ONLY raw quiz objects. NO explanations, markdown, code blocks.
+Strict Format:
+{ q: "Question Text", o: ["Option 1", "Option 2", "Option 3", "Option 4"], a: 0 },
+
+If you understand, respond ONLY with: Ready for your topic/content!`;
+
+      navigator.clipboard.writeText(promptText).then(() => {
+        const btn = document.getElementById("copyPromptBtn");
+        const orig = btn.innerHTML;
+        btn.innerHTML = "✅ Copied!";
+        btn.classList.add("from-green-600", "to-emerald-700");
+        setTimeout(() => {
+          btn.innerHTML = orig;
+          btn.classList.remove("from-green-600", "to-emerald-700");
+        }, 2000);
+      }).catch(() => alert("Clipboard access नहीं मिला।"));
+    }
+
+    /* ═══════════════════════════════════════════════
+       CREATE QUIZ FROM TEXT
+    ═══════════════════════════════════════════════ */
+    function createQuizFromText(sourceData) {
+      const txt = sourceData || document.getElementById("quizInput").value.trim();
+      if (!txt) { alert("कृपया Quiz Data Paste करें"); return; }
+
+      let validQuestions = [];
+      let skippedQuestions = 0;
+
+      const objects = txt.match(/\{[\s\S]*?\}(?=\s*,|\s*$)/g) || [];
+
+      objects.forEach((obj) => {
+        try {
+          const result = safeParseQuiz(obj);
+          if (result[0] && result[0].q && Array.isArray(result[0].o) && result[0].o.length === 4 && typeof result[0].a === "number") {
+            validQuestions.push(result[0]);
+          } else { skippedQuestions++; }
+        } catch (err) {
+          skippedQuestions++;
+          console.warn("Skipped Question:", obj, err);
+        }
+      });
+
+      if (validQuestions.length === 0) {
+        alert("कोई भी Valid Question नहीं मिला");
+        return;
+      }
+
+      quiz = validQuestions;
+      
+      // Initialize the unplayed pool for smart randomization
+      unplayedPool = shuffleArray([...quiz]);
+
+      if (skippedQuestions > 0) {
+        alert(`${skippedQuestions} खराब Questions Skip कर दिए गए।\n${validQuestions.length} Questions Quiz में शामिल किए गए।`);
+      }
+
+      document.getElementById("homePage").style.display = "none";
+      document.getElementById("mainQuizWrapper").style.display = "flex";
+      document.getElementById("numQuestions").value = quiz.length;
+      document.getElementById("numQuestions").max = quiz.length;
+      startQuiz();
+    }
+
+    /* ═══════════════════════════════════════════════
+       SHUFFLE & PREPARE
+    ═══════════════════════════════════════════════ */
+    function shuffleArray(arr) {
+      const a = [...arr];
+      for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+      }
+      return a;
+    }
+
+    function prepareQuiz(source) {
+      activeQuiz = JSON.parse(JSON.stringify(source));
+      activeQuiz.forEach((q) => {
+        const opts = q.o.map((t, i) => ({ t, ok: i === q.a }));
+        const s = shuffleArray(opts);
+        q.o = s.map((x) => x.t);
+        q.a = s.findIndex((x) => x.ok);
+      });
+    }
+
+    function startQuiz() {
+      let n = parseInt(document.getElementById("numQuestions").value);
+      if (isNaN(n) || n < 1) n = quiz.length;
+      if (n > quiz.length) n = quiz.length;
+      document.getElementById("numQuestions").value = n;
+
+      document.getElementById("startBtn").innerHTML = "▶ Restart (S)";
+
+      // Smart Randomization Logic (Non-repeating pool)
+      let selectedForRound = [];
+      if (unplayedPool.length >= n) {
+          // We have enough fresh questions
+          selectedForRound = unplayedPool.splice(0, n);
+      } else {
+          // Not enough fresh questions, take whatever is left
+          selectedForRound = [...unplayedPool];
+          let deficit = n - unplayedPool.length;
+          
+          // Refill the pool with all questions, shuffled
+          let fullPool = shuffleArray([...quiz]);
+          
+          // Filter out the ones we just picked to avoid immediate repeats in the same round
+          let safeRefill = fullPool.filter(q => !selectedForRound.some(sq => sq.q === q.q));
+          
+          // If for some reason safeRefill doesn't have enough (e.g., user asks for 100 but only 50 exist), just use fullPool
+          if (safeRefill.length < deficit) safeRefill = fullPool;
+
+          unplayedPool = safeRefill;
+          selectedForRound = selectedForRound.concat(unplayedPool.splice(0, deficit));
+      }
+
+      prepareQuiz(selectedForRound);
+      wrongQuestions = []; current = 0; score = 0; skipped = 0;
+
+      document.getElementById("scoreBox").textContent = "Score: 0";
+      document.getElementById("result").style.display = "none";
+      document.getElementById("quizScreen").style.display = "block";
+      loadQuestion();
+    }
+
+    /* ═══════════════════════════════════════════════
+       FULLSCREEN
+    ═══════════════════════════════════════════════ */
+    function toggleFullscreen() {
+      const btn = document.getElementById("fullscreenBtn");
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(err => { console.log(err.message); });
+        btn.innerHTML = "✖";
+        btn.title = "Exit Fullscreen (F)";
+      } else {
+        if (document.exitFullscreen) { document.exitFullscreen(); }
+        btn.innerHTML = "⛶";
+        btn.title = "Toggle Fullscreen (F)";
+      }
+    }
+
+    /* ═══════════════════════════════════════════════
+       TIMER
+    ═══════════════════════════════════════════════ */
+    function startTimer() {
+      clearInterval(timerInterval);
+      timeLeft = TIMER_SECONDS;
+      updateTimerUI();
+
+      timerInterval = setInterval(() => {
+        if (timerPaused) return;
+        timeLeft--;
+        updateTimerUI();
+        if (timeLeft <= 0) {
+          clearInterval(timerInterval);
+          if (!locked) timeUp();
+        }
+      }, 1000);
+    }
+
+    function toggleTimer() {
+      timerPaused = !timerPaused;
+      const btn = document.getElementById("pauseTimerBtn");
+      if (timerPaused) {
+        btn.innerHTML = "▶️"; btn.title = "Resume Timer (P / Right-Click)";
+        document.getElementById("timerBar").style.opacity = "0.4";
+        document.getElementById("timerCount").style.opacity = "0.4";
+      } else {
+        btn.innerHTML = "⏸️"; btn.title = "Pause Timer (P / Right-Click)";
+        document.getElementById("timerBar").style.opacity = "1";
+        document.getElementById("timerCount").style.opacity = "1";
+      }
+    }
+
+    function updateTimerUI() {
+      const bar = document.getElementById("timerBar");
+      const count = document.getElementById("timerCount");
+      const pct = (timeLeft / TIMER_SECONDS) * 100;
+      bar.style.width = pct + "%";
+      count.textContent = timeLeft;
+      bar.className = "timer-bar";
+      count.className = "timer-count";
+
+      if (timeLeft <= 5) { bar.classList.add("danger"); count.classList.add("danger"); } 
+      else if (timeLeft <= 10) { bar.classList.add("warn"); count.classList.add("warn"); }
+    }
+
+    function timeUp() {
+      locked = true; skipped++; speechSynthesis.cancel();
+      const correct = activeQuiz[current].a;
+      document.querySelectorAll(".option").forEach((o, i) => {
+        o.classList.add("disabled");
+        if (i === correct) o.classList.add("correct");
+      });
+      document.getElementById("feedback").innerHTML = '<span style="color:#dc2626">⏰ समय खत्म / Skipped! सही जवाब हाइलाइट किया गया।</span>';
+      wrongQuestions.push({ ...activeQuiz[current], _timedOut: true });
+      playSound("wrong");
+      setTimeout(() => { goNext(); }, 1200);
+    }
+
+    /* ═══════════════════════════════════════════════
+       LOAD QUESTION
+    ═══════════════════════════════════════════════ */
+    function loadQuestion() {
+      locked = false;
+      document.getElementById("feedback").textContent = "";
+
+      const q = activeQuiz[current];
+      document.getElementById("question").textContent = q.q;
+      document.getElementById("questionNumber").textContent = `प्रश्न ${current + 1} / ${activeQuiz.length}`;
+      document.getElementById("remaining").textContent = `${activeQuiz.length - current} बाकी`;
+      document.getElementById("progressFill").style.width = `${(current / activeQuiz.length) * 100}%`;
+
+      const labels = ["1", "2", "3", "4"];
+      const optContainer = document.getElementById("options");
+      optContainer.innerHTML = "";
+
+      q.o.forEach((opt, index) => {
+        const btn = document.createElement("div");
+        btn.className = "option";
+        btn.setAttribute("role", "button");
+        btn.setAttribute("aria-label", `Option ${labels[index]}: ${opt}`);
+        btn.setAttribute("tabindex", "0");
+
+        btn.innerHTML = `<div class="option-label">${labels[index]}</div><span>${opt}</span>`;
+
+        btn.addEventListener("mouseenter", () => { if (!locked) playSound("hover"); });
+        btn.onclick = () => checkAnswer(btn, index);
+        optContainer.appendChild(btn);
+      });
+      startTimer();
+    }
+
+    /* ═══════════════════════════════════════════════
+       CHECK ANSWER & SHOW RESULT
+    ═══════════════════════════════════════════════ */
+    function checkAnswer(btn, index) {
+      if (locked) return;
+      locked = true; clearInterval(timerInterval); speechSynthesis.cancel();
+
+      const correct = activeQuiz[current].a;
+      document.querySelectorAll(".option").forEach((o, i) => {
+        o.classList.add("disabled");
+        if (i === correct) o.classList.add("correct");
+      });
+
+      const fb = document.getElementById("feedback");
+      if (index === correct) {
+        score++;
+        fb.innerHTML = '<span style="color:#16a34a">✅ सही जवाब!</span>';
+        playSound("correct");
+      } else {
+        btn.classList.add("wrong");
+        wrongQuestions.push(activeQuiz[current]);
+        fb.innerHTML = '<span style="color:#dc2626">❌ गलत जवाब!</span>';
+        playSound("wrong");
+      }
+
+      const sb = document.getElementById("scoreBox");
+      sb.textContent = `Score: ${score}`;
+      sb.classList.remove("pop");
+      void sb.offsetWidth;
+      sb.classList.add("pop");
+
+      setTimeout(() => { goNext(); }, 1200);
+    }
+
+    function goNext() {
+      current++;
+      if (current >= activeQuiz.length) showResult(); else loadQuestion();
+    }
+
+    function showResult() {
+      clearInterval(timerInterval);
+      document.getElementById("quizScreen").style.display = "none";
+      document.getElementById("result").style.display = "block";
+
+      const total = activeQuiz.length;
+      const accuracy = total > 0 ? Math.round((score / total) * 100) : 0;
+      const wrongCount = wrongQuestions.filter((q) => !q._timedOut).length;
+      const timedOut = wrongQuestions.filter((q) => q._timedOut).length;
+
+      const ring = document.getElementById("scoreRing");
+      const colors = accuracy >= 80 ? ["#16a34a", "#15803d"] : accuracy >= 60 ? ["#2563eb", "#1d4ed8"] : accuracy >= 40 ? ["#f59e0b", "#d97706"] : ["#dc2626", "#b91c1c"];
+      ring.style.background = `linear-gradient(135deg, ${colors[0]}, ${colors[1]})`;
+
+      document.getElementById("finalScore").textContent = score;
+      document.getElementById("finalFraction").textContent = `/ ${total}`;
+
+      const { grade, msg } = getGrade(accuracy);
+      const gb = document.getElementById("gradeBadge");
+      gb.textContent = grade; gb.style.background = colors[0]; gb.style.color = "white";
+      document.getElementById("gradeMsg").textContent = msg;
+
+      document.getElementById("statAccuracy").textContent = accuracy + "%";
+      document.getElementById("statCorrect").textContent = score;
+      document.getElementById("statWrong").textContent = wrongCount;
+      document.getElementById("statSkipped").textContent = timedOut;
+
+      const toggleBtn = document.getElementById("toggleReviewBtn");
+      const retryBtn = document.getElementById("retryBtn");
+      const reviewDiv = document.getElementById("reviewAnswers");
+      reviewDiv.innerHTML = ""; reviewDiv.style.display = "none";
+
+      if (wrongQuestions.length > 0) {
+        toggleBtn.style.display = "inline-block"; toggleBtn.textContent = "👁 Wrong Answers (W)";
+        retryBtn.style.display = "inline-block";
+
+        let html = '<h3 style="font-weight:700;margin-bottom:12px;color:var(--text);">गलत जवाब:</h3>';
+        wrongQuestions.forEach((q) => {
+          const ans = String(q.o[q.a]).replace(/</g, "&lt;").replace(/>/g, "&gt;");
+          html += `<div class="review-item">
+            <div class="rq">Q: ${q.q}</div>
+            <div class="ra">✔ सही जवाब: ${ans}</div>
+          </div>`;
+        });
+        reviewDiv.innerHTML = html;
+      } else {
+        toggleBtn.style.display = "none"; retryBtn.style.display = "none";
+      }
+    }
+
+    function getGrade(acc) {
+      if (acc >= 90) return { grade: "A+", msg: "शानदार! आप बहुत होशियार हैं 🎉" };
+      if (acc >= 80) return { grade: "A", msg: "बहुत अच्छा! बस थोड़ा और मेहनत करें 👏" };
+      if (acc >= 70) return { grade: "B", msg: "अच्छा प्रदर्शन! और बेहतर हो सकते हैं 👍" };
+      if (acc >= 60) return { grade: "C", msg: "ठीक है, और पढ़ाई करें 📚" };
+      if (acc >= 40) return { grade: "D", msg: "थोड़ा और ध्यान दें 🔁" };
+      return { grade: "F", msg: "हिम्मत रखें! फिर कोशिश करें 💪" };
+    }
+
+    function toggleReview() {
+      const rd = document.getElementById("reviewAnswers");
+      const btn = document.getElementById("toggleReviewBtn");
+      if (rd.style.display === "none") {
+        rd.style.display = "block"; btn.textContent = "🙈 छुपाएं (W)";
+      } else {
+        rd.style.display = "none"; btn.textContent = "👁 Wrong Answers (W)";
+      }
+    }
+
+    function retryWrongAnswers() {
+      if (wrongQuestions.length === 0) return;
+      const src = wrongQuestions.map((q) => { const c = { ...q }; delete c._timedOut; return c; });
+      
+      // We don't affect unplayedPool here since it's just a retry of exact missed questions
+      prepareQuiz(src);
+      
+      // Update max counter to the length of retry wrong questions
+      document.getElementById("numQuestions").value = src.length;
+      document.getElementById("startBtn").innerHTML = "▶ Restart (S)";
+
+      wrongQuestions = []; current = 0; score = 0; skipped = 0;
+      document.getElementById("scoreBox").textContent = "Score: 0";
+      document.getElementById("result").style.display = "none";
+      document.getElementById("quizScreen").style.display = "block";
+      loadQuestion();
+    }
+
+    function goHome() {
+      clearInterval(timerInterval); speechSynthesis.cancel();
+      document.getElementById("startBtn").innerHTML = "▶ Start (S)"; 
+      document.getElementById("mainQuizWrapper").style.display = "none";
+      document.getElementById("homePage").style.display = "flex";
+    }
+
+    /* ═══════════════════════════════════════════════
+       SPEECH & AUDIO
+    ═══════════════════════════════════════════════ */
+    if (speechSynthesis.onvoiceschanged !== undefined) {
+      speechSynthesis.onvoiceschanged = () => speechSynthesis.getVoices();
+    }
+
+    function speakQuestion() {
+      speechSynthesis.cancel();
+      if (!activeQuiz[current]) return;
+      const clean = activeQuiz[current].q.replace(/[\p{Emoji_Presentation}\p{Extended_Pictographic}]/gu, "");
+      const u = new SpeechSynthesisUtterance(clean);
+      u.rate = 0.85; u.pitch = 1; u.lang = "hi-IN";
+      const voices = speechSynthesis.getVoices();
+      const best = voices.find((v) => v.lang === "hi-IN" && v.name.includes("Google")) || voices.find((v) => v.lang.startsWith("hi")) || voices[0];
+      if (best) u.voice = best;
+      speechSynthesis.speak(u);
+    }
+    document.getElementById("speakBtn").onclick = speakQuestion;
+
+    function playSound(type) {
+      const AC = window.AudioContext || window.webkitAudioContext;
+      if (!AC) return;
+      const ctx = new AC();
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain); gain.connect(ctx.destination);
+
+      if (type === "correct") {
+        osc.type = "sine"; osc.frequency.setValueAtTime(600, ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(1200, ctx.currentTime + 0.1);
+        gain.gain.setValueAtTime(0.4, ctx.currentTime); gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.2);
+        osc.start(); osc.stop(ctx.currentTime + 0.2);
+      } else if (type === "wrong") {
+        osc.type = "sawtooth"; osc.frequency.setValueAtTime(300, ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(100, ctx.currentTime + 0.2);
+        gain.gain.setValueAtTime(0.4, ctx.currentTime); gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3);
+        osc.start(); osc.stop(ctx.currentTime + 0.3);
+      } else if (type === "hover") {
+        osc.type = "sine"; osc.frequency.setValueAtTime(800, ctx.currentTime);
+        gain.gain.setValueAtTime(0.025, ctx.currentTime); gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.05);
+        osc.start(); osc.stop(ctx.currentTime + 0.05);
+      }
+    }
+
+    /* ═══════════════════════════════════════════════
+       KEYBOARD & MOUSE SHORTCUTS
+    ═══════════════════════════════════════════════ */
+    // 1. Right Click for Pause / Play
+    document.addEventListener("contextmenu", (e) => {
+        const quizScreenVisible = document.getElementById("quizScreen").style.display !== "none";
+        if (quizScreenVisible) {
+            e.preventDefault(); // Default menu block हो जाएगा 
+            toggleTimer();      // Timer Play / Pause होगा
+        }
+    });
+
+    // 2. Keyboard Shortcuts
+    document.addEventListener("keydown", (e) => {
+      // Q shortcut works globally (unless already inside an input, handled below)
+      const key = e.key.toLowerCase();
+      const quizWrapperVisible = document.getElementById("mainQuizWrapper").style.display !== "none";
+      
+      if (key === "q" && quizWrapperVisible) {
+          const numInput = document.getElementById("numQuestions");
+          if (numInput && document.activeElement !== numInput) {
+              e.preventDefault();
+              numInput.focus();
+              numInput.select();
+              return;
+          }
+      }
+
+      // Input/Textarea में टाइप करते वक्त अन्य शॉर्टकट्स ब्लॉक करें
+      if (e.target.tagName === "TEXTAREA" || e.target.tagName === "INPUT") {
+         return;
+      }
+
+      const quizScreenVisible = document.getElementById("quizScreen").style.display !== "none";
+      const resultScreenVisible = document.getElementById("result").style.display === "block";
+      const homePageVisible = document.getElementById("homePage").style.display !== "none";
+
+      // Space: Speak Question
+      if (e.code === "Space") {
+        e.preventDefault();
+        if (quizScreenVisible) speakQuestion();
+        return;
+      }
+
+      // N: Next / Skip Question
+      if (key === "n" && quizScreenVisible && !locked) {
+        timeUp(); 
+        return;
+      }
+
+      // P: Pause / Play Timer
+      if (key === "p" && quizScreenVisible) {
+        toggleTimer();
+        return;
+      }
+
+      // Esc: Emergency Exit to Home
+      if (key === "escape" && (quizScreenVisible || resultScreenVisible)) {
+        goHome();
+        return;
+      }
+
+      // C: Copy Prompt (Home Page)
+      if (key === "c" && homePageVisible) {
+        copyQuizPrompt();
+        return;
+      }
+
+      // Enter: Start Quiz from Home Page
+      if (e.key === "Enter" && homePageVisible) {
+        createQuizFromText();
+        return;
+      }
+
+      // H: Home (Result Screen)
+      if (key === "h" && resultScreenVisible) {
+        goHome();
+        return;
+      }
+
+      // T: Try Again (Result Screen)
+      if (key === "t" && resultScreenVisible) {
+        document.querySelector('button[onclick="startQuiz()"]')?.click();
+        return;
+      }
+
+      // F: Fullscreen
+      if (key === "f") { toggleFullscreen(); return; }
+      
+      // 1, 2, 3, 4: Options Select
+      if (!locked && ["1", "2", "3", "4"].includes(e.key) && quizScreenVisible) {
+        const opts = document.querySelectorAll(".option");
+        const idx = parseInt(e.key) - 1;
+        if (opts[idx]) opts[idx].click();
+        return;
+      }
+
+      // S: Start / Restart
+      if (key === "s" && quizWrapperVisible) { document.getElementById("startBtn")?.click(); return; }
+
+      // W: Wrong Answers (Toggle Review)
+      if (key === "w" && resultScreenVisible) {
+        const t = document.getElementById("toggleReviewBtn");
+        if (t && t.style.display !== "none") t.click();
+        return;
+      }
+
+      // R: Retry Wrong
+      if (key === "r" && resultScreenVisible) {
+        const btn = document.getElementById("retryBtn");
+        if (btn && btn.style.display !== "none") btn.click();
+        return;
+      }
+
+      // M: Mute Speech
+      if (key === "m") { speechSynthesis.cancel(); return; }
+    });
+
+    /* ═══════════════════════════════════════════════
+       INIT
+    ═══════════════════════════════════════════════ */
+    quiz = [
+      { q: "यह 📌 इमोजी किस काम के लिए इस्तेमाल किया जाता है?", o: ["मैसेज डिलीट करने के लिए", "मैसेज को पिन (Pin) करने के लिए", "लोकेशन भेजने के लिए", "सिलाई करने के लिए"], a: 1 },
+      { q: "यह इमोजी ♻️ किस प्रक्रिया को दर्शाता है?", o: ["वीडियो प्ले करना", "रीसायकल या पुनर्चक्रण (Recycle)", "रास्ता भटकना", "डिलीट करना"], a: 1 },
+      { q: "टेक्स्ट करते समय 🚫 इमोजी का क्या अर्थ होता है?", o: ["आगे बढ़ें", "निषेध या मनाही (Prohibited)", "पार्किंग", "खतरा"], a: 1 }
+    ];
+    document.getElementById("numQuestions").value = quiz.length;
+    document.getElementById("numQuestions").max = quiz.length;
+    unplayedPool = shuffleArray([...quiz]);
+    renderSavedList();
+  </script>
+</body>
+</html>
