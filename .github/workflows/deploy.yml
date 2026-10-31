@@ -2,7 +2,7 @@ name: Deploy Vite to GitHub Pages
 
 on:
   push:
-    branches: ['main'] # अगर आपकी मुख्य ब्रांच 'master' है तो यहाँ master लिखें
+    branches: ['main'] 
 
 permissions:
   contents: read
@@ -27,7 +27,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: 'npm'
+          # यहाँ से cache: 'npm' लाइन हटा दी गई है
 
       - name: Install dependencies
         run: npm install
