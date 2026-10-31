@@ -5,6 +5,7 @@ import {defineConfig} from 'vite';
 
 export default defineConfig(() => {
   return {
+    base: '/<your-repo-name>/', // <-- यहाँ '<your-repo-name>' हटाकर अपनी रिपॉजिटरी का नाम लिखें
     plugins: [react(), tailwindcss()],
     resolve: {
       alias: {
