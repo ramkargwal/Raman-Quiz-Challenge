@@ -27,10 +27,9 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          # यहाँ से cache: 'npm' लाइन हटा दी गई है
 
       - name: Install dependencies
-        run: npm install
+        run: npm install --legacy-peer-deps
 
       - name: Build
         run: npm run build
