@@ -91,7 +91,7 @@ export default function App() {
     return 'home';
   });
 
-  // Theme state (Ported from HomeScreen.kt / QuizViewModel.kt)
+  // Theme state
   const [isDark, setIsDark] = useState<boolean>(() => {
     const saved = localStorage.getItem(STORAGE_KEY_DARK_MODE);
     if (saved !== null) return saved === 'true';
@@ -178,7 +178,7 @@ export default function App() {
     Set<number>
   >(() => new Set());
   const [examTotalTimeSeconds, setExamTotalTimeSeconds] = useState<number>(
-    DEFAULT_QUIZ_QUESTIONS.length * DEFAULT_TIMER_SECONDS
+    () => DEFAULT_QUIZ_QUESTIONS.length * questionTimeSeconds
   );
   const [feedbackHtml, setFeedbackHtml] = useState<{
     text: string;
@@ -189,17 +189,41 @@ export default function App() {
   const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
 
   // Timer state
-  const [timeLeft, setTimeLeft] = useState<number>(questionTimeSeconds);
+  const [timeLeft, setTimeLeft] = useState<number>(() =>
+    quizMode === 'EXAM'
+      ? DEFAULT_QUIZ_QUESTIONS.length * questionTimeSeconds
+      : questionTimeSeconds
+  );
   const [timerPaused, setTimerPaused] = useState<boolean>(false);
 
   // Refs
   const nextTimeoutRef = useRef<number | null>(null);
+  const toastTimeoutRef = useRef<number | null>(null);
+  const scorePopTimeoutRef = useRef<number | null>(null);
+  const audioCtxRef = useRef<AudioContext | null>(null);
 
   const showToast = useCallback((msg: string) => {
+    if (toastTimeoutRef.current) {
+      clearTimeout(toastTimeoutRef.current);
+    }
     setToastMessage(msg);
-    window.setTimeout(() => {
+    toastTimeoutRef.current = window.setTimeout(() => {
       setToastMessage((prev) => (prev === msg ? null : prev));
+      toastTimeoutRef.current = null;
     }, 3000);
+  }, []);
+
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      setIsFullscreen(Boolean(document.fullscreenElement));
+    };
+    document.addEventListener('fullscreenchange', handleFullscreenChange);
+    return () => {
+      document.removeEventListener('fullscreenchange', handleFullscreenChange);
+      if (nextTimeoutRef.current) clearTimeout(nextTimeoutRef.current);
+      if (toastTimeoutRef.current) clearTimeout(toastTimeoutRef.current);
+      if (scorePopTimeoutRef.current) clearTimeout(scorePopTimeoutRef.current);
+    };
   }, []);
 
   const persistQuizzes = useCallback((list: SavedQuiz[]) => {
@@ -212,7 +236,7 @@ export default function App() {
     localStorage.setItem(STORAGE_KEY_STARRED, JSON.stringify(list));
   }, []);
 
-  // Warm Marimba / Wood Sound Effects (Ported from SoundManager.kt)
+  // Warm Marimba / Wood Sound Effects
   const playSound = useCallback(
     (type: 'correct' | 'wrong' | 'hover' | 'click') => {
       try {
@@ -221,7 +245,13 @@ export default function App() {
           (window as unknown as { webkitAudioContext: typeof AudioContext })
             .webkitAudioContext;
         if (!AC) return;
-        const ctx = new AC();
+        if (!audioCtxRef.current || audioCtxRef.current.state === 'closed') {
+          audioCtxRef.current = new AC();
+        }
+        const ctx = audioCtxRef.current;
+        if (ctx.state === 'suspended') {
+          ctx.resume().catch(() => {});
+        }
 
         const playWoodNote = (
           startSec: number,
@@ -386,7 +416,7 @@ export default function App() {
     [quizMode, questionTimeSeconds, numQuestionsInput]
   );
 
-  // Submit Exam Mode (Ported from QuizViewModel.submitExam)
+  // Submit Exam Mode
   const submitExam = useCallback(() => {
     if (nextTimeoutRef.current) clearTimeout(nextTimeoutRef.current);
     if ('speechSynthesis' in window) window.speechSynthesis.cancel();
@@ -460,14 +490,7 @@ export default function App() {
     if (screen !== 'quiz' || locked || isPaused) return;
 
     const interval = window.setInterval(() => {
-      setTimeLeft((prev) => {
-        if (prev <= 1) {
-          clearInterval(interval);
-          handleTimeUp();
-          return 0;
-        }
-        return prev - 1;
-      });
+      setTimeLeft((prev) => (prev > 0 ? prev - 1 : 0));
     }, 1000);
 
     return () => clearInterval(interval);
@@ -478,8 +501,14 @@ export default function App() {
     quizMode,
     showExitConfirmDialog,
     showQtyDialog,
-    handleTimeUp,
   ]);
+
+  // Trigger time-up handler when countdown reaches 0
+  useEffect(() => {
+    if (screen === 'quiz' && !locked && timeLeft <= 0) {
+      handleTimeUp();
+    }
+  }, [screen, locked, timeLeft, handleTimeUp]);
 
   // Check Option Answer (Supports both EXAM mode selection and PRACTICE mode instant check)
   const checkAnswer = useCallback(
@@ -503,7 +532,13 @@ export default function App() {
       if (index === correct) {
         setScore((s) => s + 1);
         setScorePop(false);
-        window.setTimeout(() => setScorePop(true), 10);
+        if (scorePopTimeoutRef.current) {
+          clearTimeout(scorePopTimeoutRef.current);
+        }
+        scorePopTimeoutRef.current = window.setTimeout(() => {
+          setScorePop(true);
+          scorePopTimeoutRef.current = null;
+        }, 10);
         setFeedbackHtml({ text: '✅ सही जवाब!', color: '#16a34a' });
         playSound('correct');
       } else {
@@ -623,7 +658,7 @@ export default function App() {
     [quizInput, showToast, startQuizWithPool]
   );
 
-  // Copy LaTeX-supported AI Prompt (Ported from QuizViewModel.copyPromptToClipboard)
+  // Copy LaTeX-supported AI Prompt
   const copyQuizPrompt = useCallback(
     (options?: BuildAiPromptOptions) => {
       const promptText = buildAiPrompt(options);
@@ -987,6 +1022,9 @@ export default function App() {
       }
 
       if (key === 'escape' && screen !== 'home') {
+        if (document.querySelector('[role="dialog"]')) {
+          return;
+        }
         e.preventDefault();
         if (screen === 'quiz') {
           setShowExitConfirmDialog(true);
@@ -1282,7 +1320,7 @@ export default function App() {
 
             {/* Practice Mode vs Exam Mode Selector + Action Controls */}
             <div className="flex gap-2.5 items-center justify-center flex-wrap">
-              {/* Mode Selector Pill Group (Ported from HomeScreen.kt) */}
+              {/* Mode Selector Pill Group */}
               <div className="flex items-center bg-white/90 dark:bg-slate-800 p-1 rounded-xl border border-slate-300 dark:border-slate-700 shadow-sm">
                 <button
                   type="button"

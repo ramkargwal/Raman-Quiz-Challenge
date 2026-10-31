@@ -73,7 +73,6 @@ export interface BuildAiPromptOptions {
 }
 
 /**
- * Ported from QuizRepository.buildAiPrompt in QuizRepository_d9d9163c.kt
  * Generates the customizable AI Quiz Prompt with Topic, Question Count,
  * Difficulty Level, Language Style, and full LaTeX Math formatting instructions.
  */
@@ -165,9 +164,8 @@ export function repairControlCharsInLatex(input: string): string {
  */
 export function sanitizeQuizText(rawText: string): string {
   if (!rawText) return '';
-  // 1. If a quoted option is just a newline `"\n"`, restore to `"<br>"`
-  let result = rawText.replace(/(["'])\s*\r?\n\s*\1/g, '$1<br>$1');
-  return result;
+  // Restore quoted options that contain only a newline `"\n"` to `"<br>"`
+  return rawText.replace(/(["'])\s*\r?\n\s*\1/g, '$1<br>$1');
 }
 
 function normalizeJsonStringContent(inner: string): string {
@@ -377,10 +375,14 @@ export function safeParseQuiz(raw: string): QuizQuestion[] {
     const parsed = JSON.parse(out);
     return Array.isArray(parsed) ? parsed : [];
   } catch {
-    let cleanStr = s.replace(/([{,]\s*)([a-zA-Z0-9_]+)\s*:/g, '$1"$2":');
-    cleanStr = cleanStr.replace(/,(\s*[\]}])/g, '$1');
-    const parsed = JSON.parse(`[${cleanStr}]`);
-    return Array.isArray(parsed) ? parsed : [];
+    try {
+      let cleanStr = s.replace(/([{,]\s*)([a-zA-Z0-9_]+)\s*:/g, '$1"$2":');
+      cleanStr = cleanStr.replace(/,(\s*[\]}])/g, '$1');
+      const parsed = JSON.parse(`[${cleanStr}]`);
+      return Array.isArray(parsed) ? parsed : [];
+    } catch {
+      return [];
+    }
   }
 }
 
@@ -526,8 +528,8 @@ export function formatQuestionsAsQuizText(questions: QuizQuestion[]): string {
 }
 
 /**
- * Exports one or more quizzes (and optionally the Starred Questions Bank) into the exact
- * editable text format used by the Android APK (`QuizRepository.exportQuizzesToEditableText`):
+ * Exports one or more quizzes (and optionally the Starred Questions Bank) into the
+ * editable text format:
  *
  * === QUIZ: Quiz Name ===
  * CATEGORY: Category Name
@@ -973,7 +975,7 @@ export function getGrade(acc: number): { grade: string; msg: string } {
 }
 
 /**
- * Formats seconds into MM:SS for Exam Mode timer (ported from ExamComponents.kt).
+ * Formats seconds into MM:SS for Exam Mode timer.
  */
 export function formatExamTime(seconds: number): string {
   const safe = Math.max(0, Math.floor(seconds));
@@ -983,8 +985,7 @@ export function formatExamTime(seconds: number): string {
 }
 
 /**
- * Evaluates an Exam Mode submission against activeQuiz and examAnswers map
- * (ported from QuizViewModel.submitExam in QuizViewModel.kt).
+ * Evaluates an Exam Mode submission against activeQuiz and examAnswers map.
  */
 export function evaluateExamSubmission(
   activeQuiz: QuizQuestion[],

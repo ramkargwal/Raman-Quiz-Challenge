@@ -29,15 +29,14 @@ export function buildOfflineQuizHtml(item: SavedQuiz): string {
     <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
     <style>
       :root {
-        --card: #ffffff; --accent: #2563eb; --correct: #16a34a; --wrong: #dc2626;
-        --text: #1e293b; --muted: #64748b; --bg: #f8fafc; --border: #e2e8f0;
-        --option-bg: #ffffff; --option-hover: #fffbeb; --header-from: #2563eb;
+        --card: #ffffff; --text: #1e293b; --muted: #64748b; --bg: #f8fafc;
+        --border: #e2e8f0; --option-bg: #ffffff; --header-from: #2563eb;
         --header-to: #4f46e5; --progress-bg: #e5e7eb;
       }
       @media (prefers-color-scheme: dark) {
         :root {
           --card: #1e293b; --text: #f1f5f9; --muted: #94a3b8; --bg: #0f172a;
-          --border: #334155; --option-bg: #1e293b; --option-hover: #2d3748; --progress-bg: #334155;
+          --border: #334155; --option-bg: #1e293b; --progress-bg: #334155;
         }
       }
       * { font-family: "Poppins", sans-serif; box-sizing: border-box; }
@@ -100,22 +99,41 @@ export function buildOfflineQuizHtml(item: SavedQuiz): string {
     var currentIdx = 0;
     var score = 0;
     var locked = false;
+    var nextTimer = null;
 
     function escapeHtml(s) {
       return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
     }
 
     function renderMath(str) {
-      if (!window.katex) return escapeHtml(str);
-      return String(str).replace(/(\\$\\$[\\s\\S]+?\\$\\$|\\\\\\[[\\s\\S]+?\\\\\\]|\\\\\\([\\s\\S]+?\\\\\\)|(?<!\\\\)\\$[^\\$\\n]+?(?<!\\\\)\\$)/g, function(m) {
+      var s = String(str);
+      if (!window.katex) return escapeHtml(s);
+      var regex = /(\\$\\$[\\s\\S]+?\\$\\$|\\\\\\[[\\s\\S]+?\\\\\\]|\\\\\\([\\s\\S]+?\\\\\\)|(?<!\\\\)\\$[^\\$\\n]+?(?<!\\\\)\\$)/g;
+      var out = '';
+      var lastIdx = 0;
+      var match;
+      while ((match = regex.exec(s)) !== null) {
+        if (match.index > lastIdx) {
+          out += escapeHtml(s.slice(lastIdx, match.index));
+        }
+        var m = match[0];
         var display = m.startsWith('$$') || m.startsWith('\\\\[');
         var inner = display ? m.slice(2, -2) : (m.startsWith('\\\\(') ? m.slice(2, -2) : m.slice(1, -1));
-        try { return katex.renderToString(inner, { displayMode: display, throwOnError: false }); }
-        catch(e) { return escapeHtml(m); }
-      });
+        try { out += katex.renderToString(inner, { displayMode: display, throwOnError: false }); }
+        catch(e) { out += escapeHtml(m); }
+        lastIdx = match.index + m.length;
+      }
+      if (lastIdx < s.length) {
+        out += escapeHtml(s.slice(lastIdx));
+      }
+      return out;
     }
 
     function startQuiz() {
+      if (nextTimer) {
+        clearTimeout(nextTimer);
+        nextTimer = null;
+      }
       activeQuestions = QUIZ_DATA.slice();
       currentIdx = 0;
       score = 0;
@@ -182,7 +200,8 @@ export function buildOfflineQuizHtml(item: SavedQuiz): string {
       buttons.forEach(function(b, i) {
         if (i !== idx && i !== q.a) b.classList.add('disabled');
       });
-      setTimeout(function() {
+      nextTimer = setTimeout(function() {
+        nextTimer = null;
         currentIdx++;
         loadQuestion();
       }, 1100);

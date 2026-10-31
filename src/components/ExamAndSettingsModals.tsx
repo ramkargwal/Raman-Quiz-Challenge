@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 
 /* ═══════════════════════════════════════════════
-   1. EXAM BOTTOM BAR (ExamComponents.kt)
+   1. EXAM BOTTOM BAR
 ═══════════════════════════════════════════════ */
 interface ExamBottomBarProps {
   currentIndex: number;
@@ -130,7 +130,7 @@ export const ExamBottomBar: React.FC<ExamBottomBarProps> = ({
 };
 
 /* ═══════════════════════════════════════════════
-   2. EXAM PALETTE DIALOG (ExamComponents.kt)
+   2. EXAM PALETTE DIALOG
 ═══════════════════════════════════════════════ */
 interface ExamPaletteDialogProps {
   totalCount: number;
@@ -280,7 +280,7 @@ export const ExamPaletteDialog: React.FC<ExamPaletteDialogProps> = ({
 };
 
 /* ═══════════════════════════════════════════════
-   3. EXAM SUBMIT CONFIRM DIALOG (ExamComponents.kt)
+   3. EXAM SUBMIT CONFIRM DIALOG
 ═══════════════════════════════════════════════ */
 interface ExamSubmitConfirmDialogProps {
   totalCount: number;
@@ -444,7 +444,7 @@ export const ExitQuizConfirmDialog: React.FC<ExitQuizConfirmDialogProps> = ({
 };
 
 /* ═══════════════════════════════════════════════
-   4. QUESTION TIMING DIALOG (HomeScreen.kt)
+   4. QUESTION TIMING DIALOG
 ═══════════════════════════════════════════════ */
 interface QuestionTimingDialogProps {
   initialSeconds: number;
@@ -629,7 +629,7 @@ export const QuestionTimingDialog: React.FC<QuestionTimingDialogProps> = ({
 };
 
 /* ═══════════════════════════════════════════════
-   5. QUESTION QUANTITY SELECTOR DIALOG (QuizScreen.kt)
+   5. QUESTION QUANTITY SELECTOR DIALOG
 ═══════════════════════════════════════════════ */
 interface QuestionQtyDialogProps {
   currentQty: number;
@@ -790,7 +790,7 @@ export const QuestionQtyDialog: React.FC<QuestionQtyDialogProps> = ({
 };
 
 /* ═══════════════════════════════════════════════
-   6. COPY AI PROMPT DIALOG (AiGeneratorDialog.kt)
+   6. COPY AI PROMPT DIALOG
 ═══════════════════════════════════════════════ */
 interface CopyPromptDialogProps {
   onDismiss: () => void;

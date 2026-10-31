@@ -1,10 +1,16 @@
-import React, { useState, useMemo, useRef } from 'react';
+import React, { useState, useMemo, useRef, useEffect } from 'react';
 import {
   SavedQuiz,
   QuizQuestion,
   exportQuizzesToEditableText,
 } from '../utils/latexQuizEngine';
 import { LatexText } from './LatexText';
+
+function normalizeCategory(category?: string): string {
+  return (
+    (category || 'General').split(/\r?\n/)[0]?.trim().slice(0, 25) || 'General'
+  );
+}
 
 interface QuizDatabaseScreenProps {
   savedQuizzes: SavedQuiz[];
@@ -49,25 +55,48 @@ export const QuizDatabaseScreen: React.FC<QuizDatabaseScreenProps> = ({
 
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
+  useEffect(() => {
+    if (!showStarredBankModal && !quizPendingDelete && !showClearAllConfirm) {
+      return;
+    }
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        if (quizPendingDelete) setQuizPendingDelete(null);
+        else if (showClearAllConfirm) setShowClearAllConfirm(false);
+        else if (showStarredBankModal) setShowStarredBankModal(false);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [showStarredBankModal, quizPendingDelete, showClearAllConfirm]);
+
   // Compute category counts
   const categoryCounts = useMemo(() => {
     const counts = new Map<string, number>();
     savedQuizzes.forEach((q) => {
-      const cat =
-        (q.category || 'General').split(/\r?\n/)[0]?.trim().slice(0, 25) ||
-        'General';
+      const cat = normalizeCategory(q.category);
       counts.set(cat, (counts.get(cat) || 0) + 1);
     });
     return Array.from(counts.entries());
   }, [savedQuizzes]);
 
+  useEffect(() => {
+    if (
+      selectedCategoryFilter !== 'All' &&
+      !categoryCounts.some(
+        ([cat]) => cat.toLowerCase() === selectedCategoryFilter.toLowerCase()
+      )
+    ) {
+      onSelectCategoryFilter('All');
+    }
+  }, [categoryCounts, selectedCategoryFilter, onSelectCategoryFilter]);
+
   // Filter quizzes by category and search query
   const filteredQuizzes = useMemo(() => {
     const query = searchQuery.trim().toLowerCase();
     return savedQuizzes.filter((saved) => {
-      const cleanCat =
-        (saved.category || 'General').split(/\r?\n/)[0]?.trim().slice(0, 25) ||
-        'General';
+      const cleanCat = normalizeCategory(saved.category);
       const matchesCategory =
         selectedCategoryFilter === 'All' ||
         cleanCat.toLowerCase() === selectedCategoryFilter.toLowerCase();
@@ -83,9 +112,7 @@ export const QuizDatabaseScreen: React.FC<QuizDatabaseScreenProps> = ({
   const groupedByCategory = useMemo(() => {
     const groups = new Map<string, SavedQuiz[]>();
     filteredQuizzes.forEach((saved) => {
-      const cleanCat =
-        (saved.category || 'General').split(/\r?\n/)[0]?.trim().slice(0, 25) ||
-        'General';
+      const cleanCat = normalizeCategory(saved.category);
       const list = groups.get(cleanCat) || [];
       list.push(saved);
       groups.set(cleanCat, list);
@@ -131,7 +158,7 @@ export const QuizDatabaseScreen: React.FC<QuizDatabaseScreenProps> = ({
       selectedCategoryFilter !== 'All'
         ? savedQuizzes.filter(
             (q) =>
-              (q.category || 'General').toLowerCase() ===
+              normalizeCategory(q.category).toLowerCase() ===
               selectedCategoryFilter.toLowerCase()
           )
         : savedQuizzes;
@@ -633,11 +660,7 @@ export const QuizDatabaseScreen: React.FC<QuizDatabaseScreenProps> = ({
 
                 {/* Quizzes in this Category */}
                 {quizzesInCat.map((saved) => {
-                  const categoryLabel =
-                    (saved.category || 'General')
-                      .split(/\r?\n/)[0]
-                      ?.trim()
-                      .slice(0, 25) || 'General';
+                  const categoryLabel = normalizeCategory(saved.category);
                   return (
                     <div
                       key={saved.id}

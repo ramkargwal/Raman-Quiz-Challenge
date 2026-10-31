@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {
   parseQuizText,
+  safeParseQuiz,
   renderMixedLatexToHtml,
   latexToSpokenText,
   prepareQuizQuestions,
@@ -15,6 +16,7 @@ import {
   formatExamTime,
   evaluateExamSubmission,
 } from './latexQuizEngine';
+import { buildOfflineQuizHtml } from './offlineExporter';
 
 test('parseQuizText parses complex LaTeX with both single and double backslashes and nested braces', () => {
   const rawInput = `
@@ -164,4 +166,19 @@ test('formatExamTime and evaluateExamSubmission compute CBT Exam Mode results ac
   assert.equal(result.wrongQuestions[0]._timedOut, false);
   assert.equal(result.wrongQuestions[1]._timedOut, true);
 });
+
+test('safeParseQuiz returns empty array instead of throwing on malformed input and buildOfflineQuizHtml escapes non-math HTML', () => {
+  assert.deepEqual(safeParseQuiz('{ invalid :: ?? '), []);
+  const html = buildOfflineQuizHtml({
+    id: 'test_1',
+    name: 'HTML & Math <Test>',
+    category: 'CS',
+    data: '{ q: "Which tag creates a line break?", o: ["<br>", "<hr>", "<div>", "<p>"], a: 0 },',
+    timestamp: 1000,
+    questionCount: 1,
+  });
+  assert.ok(html.includes('HTML &amp; Math &lt;Test&gt;'));
+  assert.ok(html.includes('escapeHtml(s.slice(lastIdx, match.index))'));
+});
+
 

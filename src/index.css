@@ -5,15 +5,11 @@
 :root,
 html.light {
   --card: #ffffff;
-  --accent: #2563eb;
-  --correct: #16a34a;
-  --wrong: #dc2626;
   --text: #1e293b;
   --muted: #64748b;
   --bg: #f8fafc;
   --border: #e2e8f0;
   --option-bg: #ffffff;
-  --option-hover: #fffbeb;
   --header-from: #2563eb;
   --header-to: #4f46e5;
   --progress-bg: #e5e7eb;
@@ -29,7 +25,6 @@ html.dark {
   --bg: #0f172a;
   --border: #334155;
   --option-bg: #0f172a;
-  --option-hover: #2d3748;
   --progress-bg: #334155;
 }
 
