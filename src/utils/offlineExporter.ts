@@ -72,7 +72,7 @@ export function buildOfflineQuizHtml(item: SavedQuiz): string {
     <div class="header">
       <div class="header-row">
         <div class="quiz-controls">
-          <button id="startBtn" onclick="startQuiz()">🔄 Restart</button>
+          <button id="startBtn" onclick="startQuiz()">Restart</button>
         </div>
         <div class="title">🏆 ${escapedName} 🏆</div>
         <div class="score-box" id="scoreBox">Score: 0</div>

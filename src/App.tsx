@@ -1256,7 +1256,6 @@ export default function App() {
                   title={`Question Timing (${questionTimeSeconds}s)`}
                   className="px-3 py-1.5 rounded-xl bg-white/20 hover:bg-white/30 text-white text-xs font-bold flex items-center gap-1.5 backdrop-blur-sm cursor-pointer transition"
                 >
-                  <span>⏱️</span>
                   <span>{questionTimeSeconds}s</span>
                 </button>
 
@@ -1271,9 +1270,9 @@ export default function App() {
                   aria-label={
                     isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode'
                   }
-                  className="w-9 h-9 rounded-xl bg-white/20 hover:bg-white/30 text-white text-base flex items-center justify-center backdrop-blur-sm cursor-pointer transition"
+                  className="px-3 py-1.5 rounded-xl bg-white/20 hover:bg-white/30 text-white text-xs font-bold flex items-center justify-center backdrop-blur-sm cursor-pointer transition"
                 >
-                  {isDark ? '☀️' : '🌙'}
+                  {isDark ? 'Light' : 'Dark'}
                 </button>
               </div>
 
@@ -1336,7 +1335,6 @@ export default function App() {
                       : 'text-slate-600 dark:text-slate-300 hover:text-slate-900'
                   }`}
                 >
-                  <span>⚡</span>
                   <span>Practice Mode</span>
                 </button>
 
@@ -1354,7 +1352,6 @@ export default function App() {
                       : 'text-slate-600 dark:text-slate-300 hover:text-slate-900'
                   }`}
                 >
-                  <span>📋</span>
                   <span>Exam Mode</span>
                 </button>
               </div>
@@ -1388,7 +1385,7 @@ export default function App() {
                   copySuccess ? 'from-green-600 to-emerald-700' : ''
                 }`}
               >
-                {copySuccess ? '✅ Copied!' : '📋 Copy Prompt'}
+                {copySuccess ? 'Copied!' : 'Copy Prompt'}
               </button>
 
               <button
@@ -1400,7 +1397,7 @@ export default function App() {
                     : 'from-violet-500 to-purple-600 hover:from-violet-600 hover:to-purple-700'
                 } hover:-translate-y-0.5 cursor-pointer whitespace-nowrap`}
               >
-                {saveSuccess ? '✅ Saved!' : '💾 Save'}
+                {saveSuccess ? 'Saved!' : 'Save'}
               </button>
 
               <button
@@ -1409,7 +1406,7 @@ export default function App() {
                 id="openQuizDatabaseBtn"
                 className="px-4 py-2.5 rounded-xl font-bold text-white text-sm transition-all shadow bg-gradient-to-r from-sky-600 to-blue-700 hover:from-sky-700 hover:to-blue-800 hover:-translate-y-0.5 cursor-pointer whitespace-nowrap"
               >
-                📂 Database ({savedQuizzes.length})
+                Database ({savedQuizzes.length})
               </button>
 
               <button
@@ -1417,7 +1414,7 @@ export default function App() {
                 onClick={() => createQuizFromText()}
                 className="px-6 py-2.5 rounded-xl font-bold text-white text-base transition-all shadow bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 hover:-translate-y-0.5 cursor-pointer whitespace-nowrap"
               >
-                🚀 Start
+                Start
               </button>
             </div>
 
@@ -1485,10 +1482,10 @@ export default function App() {
                     data-testid="quiz-home-button"
                     onClick={requestExitQuiz}
                     title="Exit to Home (Esc)"
-                    className="!w-auto px-3 py-1.5 flex items-center gap-1.5 cursor-pointer hover:bg-white/30 transition"
+                    aria-label="Exit to Home"
+                    className="!w-auto px-3 py-1.5 rounded-lg bg-white/20 hover:bg-white/30 text-white text-lg flex items-center justify-center cursor-pointer transition"
                   >
-                    <span>🏠</span>
-                    <span>Home</span>
+                    🏠
                   </button>
 
                   {/* Question Quantity Selector Pill Button (Opens QuestionQtyDialog) */}
@@ -1498,19 +1495,18 @@ export default function App() {
                     data-testid="quiz-qty-selector-button"
                     onClick={() => setShowQtyDialog(true)}
                     title="Select Number of Questions (Press Q)"
-                    className="!w-auto px-3 py-1.5 flex items-center gap-1.5 cursor-pointer hover:bg-white/30 transition"
+                    className="!w-auto px-3 py-1.5 rounded-lg bg-white/20 hover:bg-white/30 text-white text-sm font-bold flex items-center gap-1.5 cursor-pointer transition"
                   >
-                    <span>🎛️</span>
                     <span>Q: {numQuestionsInput}</span>
-                    <span className="text-xs opacity-80">▼</span>
                   </button>
 
                   <button
                     type="button"
                     id="startBtn"
                     onClick={() => startQuizWithPool(quiz, numQuestionsInput)}
+                    className="!w-auto px-3 py-1.5 rounded-lg bg-white/20 hover:bg-white/30 text-white text-sm font-bold flex items-center justify-center cursor-pointer transition"
                   >
-                    ▶ Restart (S)
+                    Restart (S)
                   </button>
                 </div>
 
@@ -1531,7 +1527,6 @@ export default function App() {
                       className="score-box !px-4 !py-1.5 !text-sm flex items-center gap-2 cursor-pointer hover:scale-105 transition !text-blue-700 font-extrabold shadow-md"
                       title="Open Question Palette"
                     >
-                      <span className="text-base">▦</span>
                       <span>
                         Palette ({Object.keys(examAnswers).length}/{activeQuiz.length})
                       </span>
@@ -1553,9 +1548,9 @@ export default function App() {
                     }}
                     title={isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
                     aria-label="Toggle Dark Mode"
-                    className="px-2.5 py-1.5 rounded-lg bg-white/20 hover:bg-white/30 text-white text-base cursor-pointer transition"
+                    className="px-3 py-1.5 rounded-lg bg-white/20 hover:bg-white/30 text-white text-xs font-bold cursor-pointer transition"
                   >
-                    {isDark ? '☀️' : '🌙'}
+                    {isDark ? 'Light' : 'Dark'}
                   </button>
 
                   <button
@@ -1626,7 +1621,9 @@ export default function App() {
                       id="pauseTimerBtn"
                       onClick={() => setTimerPaused((p) => !p)}
                       style={{
-                        fontSize: '20px',
+                        fontSize: '12px',
+                        fontWeight: 700,
+                        color: 'var(--text)',
                         cursor: 'pointer',
                         userSelect: 'none',
                         background: 'none',
@@ -1640,7 +1637,7 @@ export default function App() {
                       }
                       aria-label={timerPaused ? 'Resume Timer' : 'Pause Timer'}
                     >
-                      {timerPaused ? '▶️' : '⏸️'}
+                      {timerPaused ? 'Resume' : 'Pause'}
                     </button>
                   )}
 
@@ -1672,7 +1669,7 @@ export default function App() {
                       <LatexText text={currentQuestion.q} />
                     </div>
                     <div className="flex items-center gap-2 shrink-0">
-                      {/* Star Icon: Specifically for saving Important Questions to Starred Questions Bank in Database */}
+                      {/* Star Button: Specifically for saving Important Questions to Starred Questions Bank in Database */}
                       <button
                         type="button"
                         data-testid="quiz-star-question-button"
@@ -1687,13 +1684,13 @@ export default function App() {
                             ? 'Remove from Important Questions'
                             : 'Star as Important Question'
                         }
-                        className={`w-10 h-10 rounded-full border flex items-center justify-center text-lg cursor-pointer transition ${
+                        className={`px-3 h-9 rounded-full border flex items-center justify-center text-xs font-bold cursor-pointer transition ${
                           isCurrentQuestionStarred
-                            ? 'bg-amber-100 border-amber-400 text-amber-500 shadow-sm'
-                            : 'bg-slate-100 dark:bg-slate-800 border-slate-300 dark:border-slate-700 text-slate-400 hover:text-amber-500'
+                            ? 'bg-amber-100 border-amber-400 text-amber-600 shadow-sm'
+                            : 'bg-slate-100 dark:bg-slate-800 border-slate-300 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:text-amber-500'
                         }`}
                       >
-                        {isCurrentQuestionStarred ? '⭐' : '☆'}
+                        {isCurrentQuestionStarred ? 'Starred' : 'Star'}
                       </button>
                       <button
                         type="button"
@@ -1703,7 +1700,7 @@ export default function App() {
                         title="सवाल सुनें (Space)"
                         aria-label="सवाल सुनें"
                       >
-                        🔊
+                        Speak
                       </button>
                     </div>
                   </div>
@@ -1743,11 +1740,6 @@ export default function App() {
                         >
                           <div className="option-label">{index + 1}</div>
                           <LatexText text={opt} className="flex-1" />
-                          {isExamSelected && (
-                            <span className="text-blue-600 dark:text-blue-300 font-bold text-lg">
-                              ✔
-                            </span>
-                          )}
                         </button>
                       );
                     })}
@@ -1838,7 +1830,7 @@ export default function App() {
                         id="toggleReviewBtn"
                         onClick={() => setShowReview((r) => !r)}
                       >
-                        {showReview ? '🙈 छुपाएं (W)' : '👁 Wrong Answers (W)'}
+                        {showReview ? 'छुपाएं (W)' : 'Wrong Answers (W)'}
                       </button>
                       <button
                         type="button"
@@ -1846,7 +1838,7 @@ export default function App() {
                         id="retryBtn"
                         onClick={retryWrongAnswers}
                       >
-                        🔄 Retry Wrong (R)
+                        Retry Wrong (R)
                       </button>
                     </>
                   )}
@@ -1855,7 +1847,7 @@ export default function App() {
                     className="btn-action"
                     onClick={() => startQuizWithPool(quiz, numQuestionsInput)}
                   >
-                    ▶ Try Again (T)
+                    Try Again (T)
                   </button>
                   <button
                     type="button"
@@ -1865,7 +1857,7 @@ export default function App() {
                       background: 'linear-gradient(135deg, #475569, #334155)',
                     }}
                   >
-                    🏠 Home (H)
+                    Home (H)
                   </button>
                 </div>
 
@@ -1892,10 +1884,10 @@ export default function App() {
                             <button
                               type="button"
                               onClick={() => toggleStarQuestion(q)}
-                              className="text-lg cursor-pointer"
+                              className="px-2.5 py-1 rounded-lg border border-amber-400/60 text-xs font-bold text-amber-600 dark:text-amber-400 cursor-pointer"
                               title={starred ? 'Unstar Question' : 'Star Question'}
                             >
-                              {starred ? '⭐' : '☆'}
+                              {starred ? 'Starred' : 'Star'}
                             </button>
                           </div>
 

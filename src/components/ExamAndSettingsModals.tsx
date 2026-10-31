@@ -41,7 +41,7 @@ export const ExamBottomBar: React.FC<ExamBottomBarProps> = ({
               data-testid="exam-clear-option-button"
               className="px-3.5 py-1.5 rounded-xl bg-red-600 hover:bg-red-700 text-white text-xs font-bold shadow-sm cursor-pointer transition"
             >
-              ✖ Clear Response
+              Clear Response
             </button>
           )}
         </div>
@@ -52,7 +52,6 @@ export const ExamBottomBar: React.FC<ExamBottomBarProps> = ({
           data-testid="exam-submit-button"
           className="px-4 py-1.5 rounded-xl bg-green-600 hover:bg-green-700 text-white text-xs font-extrabold flex items-center gap-1.5 shadow-sm cursor-pointer transition"
         >
-          <span>✔✔</span>
           <span>Submit Exam</span>
         </button>
       </div>
@@ -66,7 +65,6 @@ export const ExamBottomBar: React.FC<ExamBottomBarProps> = ({
           data-testid="exam-prev-button"
           className="flex-1 h-11.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-600/40 text-white font-bold text-sm flex items-center justify-center gap-1.5 cursor-pointer disabled:cursor-not-allowed transition"
         >
-          <span>←</span>
           <span>Previous</span>
         </button>
 
@@ -90,18 +88,6 @@ export const ExamBottomBar: React.FC<ExamBottomBarProps> = ({
               : 'bg-slate-100 dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-200 hover:border-amber-500 hover:text-amber-600'
           }`}
         >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 24 24"
-            fill={isBookmarked ? 'currentColor' : 'none'}
-            stroke="currentColor"
-            strokeWidth="2.2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            className="w-4 h-4 shrink-0"
-          >
-            <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
-          </svg>
           <span>{isBookmarked ? 'Bookmarked' : 'Bookmark'}</span>
         </button>
 
@@ -122,7 +108,6 @@ export const ExamBottomBar: React.FC<ExamBottomBarProps> = ({
           }`}
         >
           <span>{canGoNext ? 'Next' : 'Finish & Submit'}</span>
-          <span>{canGoNext ? '→' : '✔'}</span>
         </button>
       </div>
     </div>
@@ -183,9 +168,9 @@ export const ExamPaletteDialog: React.FC<ExamPaletteDialogProps> = ({
             type="button"
             onClick={onDismiss}
             aria-label="Close Question Palette"
-            className="w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 font-bold text-sm flex items-center justify-center cursor-pointer transition"
+            className="px-2.5 h-8 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 font-bold text-xs flex items-center justify-center cursor-pointer transition"
           >
-            ✕
+            Close
           </button>
         </div>
 
@@ -271,7 +256,7 @@ export const ExamPaletteDialog: React.FC<ExamPaletteDialogProps> = ({
             }}
             className="flex-[1.3] h-10 rounded-xl bg-green-600 hover:bg-green-700 text-white font-bold text-xs sm:text-sm cursor-pointer transition shadow-xs"
           >
-            ✔✔ Submit Exam
+            Submit Exam
           </button>
         </div>
       </div>
@@ -434,7 +419,6 @@ export const ExitQuizConfirmDialog: React.FC<ExitQuizConfirmDialogProps> = ({
             data-testid="confirm-exit-quiz-button"
             className="flex-[1.3] h-11 rounded-xl bg-red-600 hover:bg-red-700 text-white font-bold text-sm flex items-center justify-center gap-1.5 cursor-pointer transition shadow-sm"
           >
-            <span>🏠</span>
             <span>Exit to Home</span>
           </button>
         </div>
@@ -619,7 +603,6 @@ export const QuestionTimingDialog: React.FC<QuestionTimingDialogProps> = ({
             data-testid="apply-time-button"
             className="flex-[1.3] h-12 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm flex items-center justify-center gap-1.5 cursor-pointer transition"
           >
-            <span>✔</span>
             <span>Apply</span>
           </button>
         </div>
@@ -780,7 +763,6 @@ export const QuestionQtyDialog: React.FC<QuestionQtyDialogProps> = ({
             data-testid="apply-qty-button"
             className="flex-[1.3] h-12 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm flex items-center justify-center gap-1.5 cursor-pointer transition"
           >
-            <span>🔄</span>
             <span>Apply</span>
           </button>
         </div>
@@ -985,7 +967,6 @@ export const CopyPromptDialog: React.FC<CopyPromptDialogProps> = ({
             }}
             className="flex-[1.4] h-11 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm flex items-center justify-center gap-1.5 cursor-pointer transition shadow-sm"
           >
-            <span>📋</span>
             <span>Copy</span>
           </button>
         </div>

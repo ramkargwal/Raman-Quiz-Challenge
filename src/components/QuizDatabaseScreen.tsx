@@ -272,16 +272,16 @@ export const QuizDatabaseScreen: React.FC<QuizDatabaseScreenProps> = ({
                   type="button"
                   onClick={onClearAllStarred}
                   title="Clear All Starred"
-                  className="p-2 rounded-full text-red-600 hover:bg-red-50 dark:hover:bg-red-950/40 cursor-pointer"
+                  className="px-3 py-1.5 rounded-xl text-xs font-bold text-red-600 bg-red-50 hover:bg-red-100 dark:bg-red-950/40 dark:hover:bg-red-950/70 cursor-pointer"
                 >
-                  🗑️
+                  Clear All
                 </button>
               )}
             </div>
 
             {starredQuestions.length === 0 ? (
               <div className="py-10 text-center text-sm text-slate-500 dark:text-slate-400">
-                No starred questions yet. Tap the ⭐ Star icon during any quiz or on the Result page to save important questions here.
+                No starred questions yet. Tap the Star button during any quiz or on the Result page to save important questions here.
               </div>
             ) : (
               <>
@@ -299,10 +299,10 @@ export const QuizDatabaseScreen: React.FC<QuizDatabaseScreenProps> = ({
                         <button
                           type="button"
                           onClick={() => onRemoveStarredQuestion(q.q)}
-                          className="text-red-600 hover:text-red-700 text-sm px-1.5 cursor-pointer"
+                          className="text-red-600 hover:text-red-700 text-xs font-bold px-2 py-0.5 rounded-lg bg-red-50 dark:bg-red-950/40 cursor-pointer"
                           title="Remove Starred Question"
                         >
-                          🗑
+                          Remove
                         </button>
                       </div>
                       <div className="text-sm font-bold text-green-600 dark:text-green-400">
@@ -321,7 +321,7 @@ export const QuizDatabaseScreen: React.FC<QuizDatabaseScreenProps> = ({
                     }}
                     className="flex-1 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm cursor-pointer"
                   >
-                    ▶ Start Quiz
+                    Start Quiz
                   </button>
                   <button
                     type="button"
@@ -335,7 +335,7 @@ export const QuizDatabaseScreen: React.FC<QuizDatabaseScreenProps> = ({
                     }}
                     className="flex-1 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm cursor-pointer"
                   >
-                    📤 Export .txt
+                    Export .txt
                   </button>
                 </div>
               </>
@@ -440,16 +440,16 @@ export const QuizDatabaseScreen: React.FC<QuizDatabaseScreenProps> = ({
       <div className="w-full max-w-3xl flex flex-col gap-3.5">
         {/* Top Header Card */}
         <div className="bg-white dark:bg-slate-800 rounded-2xl p-4 shadow-md border border-slate-200/80 dark:border-slate-700 flex flex-col gap-3">
-          {/* Top Row: Back Button, Title & Clear All Icon */}
+          {/* Top Row: Back Button, Title & Clear All Button */}
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <button
                 type="button"
                 onClick={onBackHome}
                 aria-label="Back to Home"
-                className="w-10 h-10 rounded-full bg-blue-600 hover:bg-blue-700 text-white font-bold text-lg flex items-center justify-center shadow cursor-pointer transition"
+                className="px-3.5 h-10 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs flex items-center justify-center shadow cursor-pointer transition"
               >
-                ←
+                Back
               </button>
               <div>
                 <h1 className="text-xl font-extrabold text-slate-900 dark:text-white leading-tight">
@@ -467,9 +467,9 @@ export const QuizDatabaseScreen: React.FC<QuizDatabaseScreenProps> = ({
                 onClick={() => setShowClearAllConfirm(true)}
                 title="Clear All Quiz Data"
                 aria-label="Clear All Quiz Data"
-                className="w-10 h-10 rounded-full bg-red-600/12 hover:bg-red-600/20 text-red-600 flex items-center justify-center text-lg cursor-pointer transition"
+                className="px-3 h-9 rounded-xl bg-red-600/12 hover:bg-red-600/20 text-red-600 flex items-center justify-center text-xs font-bold cursor-pointer transition"
               >
-                🗑️
+                Clear All
               </button>
             )}
           </div>
@@ -481,7 +481,6 @@ export const QuizDatabaseScreen: React.FC<QuizDatabaseScreenProps> = ({
               onClick={() => fileInputRef.current?.click()}
               className="h-10.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm flex items-center justify-center gap-1.5 shadow-sm cursor-pointer transition"
             >
-              <span>📥</span>
               <span>Import</span>
             </button>
 
@@ -491,7 +490,6 @@ export const QuizDatabaseScreen: React.FC<QuizDatabaseScreenProps> = ({
               onClick={handleExportAllTxt}
               className="h-10.5 rounded-xl bg-blue-600 hover:bg-blue-700 disabled:opacity-45 text-white font-bold text-sm flex items-center justify-center gap-1.5 shadow-sm cursor-pointer disabled:cursor-not-allowed transition"
             >
-              <span>📤</span>
               <span>Export</span>
             </button>
 
@@ -501,7 +499,6 @@ export const QuizDatabaseScreen: React.FC<QuizDatabaseScreenProps> = ({
               onClick={handleShareAll}
               className="h-10.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 disabled:opacity-45 text-white font-bold text-sm flex items-center justify-center gap-1.5 shadow-sm cursor-pointer disabled:cursor-not-allowed transition"
             >
-              <span>🔗</span>
               <span>Share</span>
             </button>
           </div>
@@ -517,16 +514,16 @@ export const QuizDatabaseScreen: React.FC<QuizDatabaseScreenProps> = ({
               onChange={(e) => onSearchQueryChange(e.target.value)}
               placeholder="Search quiz list and cat."
               aria-label="Search quiz list and category"
-              className="w-full pl-9 pr-9 py-2.5 rounded-xl border border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-900/60 text-sm text-slate-900 dark:text-slate-100 outline-none focus:border-blue-600"
+              className="w-full pl-9 pr-14 py-2.5 rounded-xl border border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-900/60 text-sm text-slate-900 dark:text-slate-100 outline-none focus:border-blue-600"
             />
             {searchQuery && (
               <button
                 type="button"
                 onClick={() => onSearchQueryChange('')}
                 aria-label="Clear search"
-                className="absolute right-3 text-slate-400 hover:text-slate-600 text-sm cursor-pointer"
+                className="absolute right-3 text-slate-500 hover:text-slate-700 dark:text-slate-400 text-xs font-bold cursor-pointer"
               >
-                ✖
+                Clear
               </button>
             )}
           </div>
@@ -591,24 +588,24 @@ export const QuizDatabaseScreen: React.FC<QuizDatabaseScreenProps> = ({
 
           {starredQuestions.length > 0 && (
             <div
-              className="flex items-center gap-1 shrink-0"
+              className="flex items-center gap-1.5 shrink-0"
               onClick={(e) => e.stopPropagation()}
             >
               <button
                 type="button"
                 onClick={onStartStarredQuiz}
                 title="Start Starred Quiz"
-                className="w-9 h-9 rounded-full hover:bg-blue-100 dark:hover:bg-slate-700 text-blue-600 flex items-center justify-center text-base cursor-pointer"
+                className="px-2.5 h-8 rounded-lg bg-blue-50 hover:bg-blue-100 dark:bg-slate-700 text-blue-600 dark:text-blue-400 flex items-center justify-center text-xs font-bold cursor-pointer"
               >
-                ▶
+                Start
               </button>
               <button
                 type="button"
                 onClick={() => setShowStarredBankModal(true)}
                 title="View Starred Questions"
-                className="w-9 h-9 rounded-full hover:bg-amber-100 dark:hover:bg-slate-700 text-amber-600 flex items-center justify-center text-base cursor-pointer"
+                className="px-2.5 h-8 rounded-lg bg-amber-50 hover:bg-amber-100 dark:bg-slate-700 text-amber-600 dark:text-amber-400 flex items-center justify-center text-xs font-bold cursor-pointer"
               >
-                👁
+                View
               </button>
               <button
                 type="button"
@@ -618,9 +615,9 @@ export const QuizDatabaseScreen: React.FC<QuizDatabaseScreenProps> = ({
                   onShowToast('✅ Exported starred_questions_bank.txt');
                 }}
                 title="Export Starred Questions (.txt)"
-                className="w-9 h-9 rounded-full hover:bg-indigo-100 dark:hover:bg-slate-700 text-indigo-600 flex items-center justify-center text-base cursor-pointer"
+                className="px-2.5 h-8 rounded-lg bg-indigo-50 hover:bg-indigo-100 dark:bg-slate-700 text-indigo-600 dark:text-indigo-400 flex items-center justify-center text-xs font-bold cursor-pointer"
               >
-                📤
+                Export
               </button>
             </div>
           )}
@@ -682,7 +679,7 @@ export const QuizDatabaseScreen: React.FC<QuizDatabaseScreenProps> = ({
                       </div>
 
                       <div
-                        className="flex items-center gap-1 shrink-0"
+                        className="flex items-center gap-1.5 shrink-0"
                         onClick={(e) => e.stopPropagation()}
                       >
                         <button
@@ -690,36 +687,36 @@ export const QuizDatabaseScreen: React.FC<QuizDatabaseScreenProps> = ({
                           onClick={() => onSelectSavedQuiz(saved, true)}
                           title="Start Quiz"
                           aria-label={`Start ${saved.name}`}
-                          className="w-9 h-9 rounded-full hover:bg-blue-50 dark:hover:bg-slate-700 text-blue-600 flex items-center justify-center text-base cursor-pointer"
+                          className="px-2.5 h-8 rounded-lg bg-blue-50 hover:bg-blue-100 dark:bg-slate-700 text-blue-600 dark:text-blue-400 flex items-center justify-center text-xs font-bold cursor-pointer"
                         >
-                          ▶
+                          Start
                         </button>
                         <button
                           type="button"
                           onClick={() => handleExportSingleTxt(saved)}
                           title="Export Quiz (.txt)"
                           aria-label={`Export ${saved.name} as txt`}
-                          className="w-9 h-9 rounded-full hover:bg-indigo-50 dark:hover:bg-slate-700 text-indigo-600 flex items-center justify-center text-base cursor-pointer"
+                          className="px-2.5 h-8 rounded-lg bg-indigo-50 hover:bg-indigo-100 dark:bg-slate-700 text-indigo-600 dark:text-indigo-400 flex items-center justify-center text-xs font-bold cursor-pointer"
                         >
-                          📤
+                          Export
                         </button>
                         <button
                           type="button"
                           onClick={() => onExportOfflineHtml(saved)}
                           title="Download Offline HTML"
                           aria-label={`Download ${saved.name} offline HTML`}
-                          className="w-9 h-9 rounded-full hover:bg-sky-50 dark:hover:bg-slate-700 text-sky-600 flex items-center justify-center text-base cursor-pointer"
+                          className="px-2.5 h-8 rounded-lg bg-sky-50 hover:bg-sky-100 dark:bg-slate-700 text-sky-600 dark:text-sky-400 flex items-center justify-center text-xs font-bold cursor-pointer"
                         >
-                          📥
+                          HTML
                         </button>
                         <button
                           type="button"
                           onClick={() => setQuizPendingDelete(saved)}
                           title="Delete Saved Quiz"
                           aria-label={`Delete ${saved.name}`}
-                          className="w-9 h-9 rounded-full hover:bg-red-50 dark:hover:bg-slate-700 text-red-600 flex items-center justify-center text-base cursor-pointer"
+                          className="px-2.5 h-8 rounded-lg bg-red-50 hover:bg-red-100 dark:bg-slate-700 text-red-600 dark:text-red-400 flex items-center justify-center text-xs font-bold cursor-pointer"
                         >
-                          🗑
+                          Delete
                         </button>
                       </div>
                     </div>
